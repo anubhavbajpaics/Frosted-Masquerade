@@ -1,3 +1,6 @@
 {
-  "outputDirectory": "public"
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "outputDirectory": "public",
+  "functions": { "api/register.js": { "maxDuration": 30 } }
 }
