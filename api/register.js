@@ -21,11 +21,16 @@ module.exports = async (req, res) => {
   Object.assign(d, { tier: tier[0], amount: tier[1] * (d.friend ? 2 : 1), shot });
   try {
     const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d), redirect: 'follow' });
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.error);
+    const text = await r.text();
+    let j;
+    try { j = JSON.parse(text); } catch {
+      if (text.includes('Script function not found: doPost')) throw new Error('The Google Sheet webhook is missing the doPost handler. Redeploy Code.gs.');
+      throw new Error(`The Google Sheet webhook returned an unexpected response (${r.status}).`);
+    }
+    if (!r.ok || !j.ok) throw new Error(j.error || 'The Google Sheet webhook rejected the registration.');
     return res.status(200).json({ ok: true, tier: d.tier, amount: d.amount });
   } catch (e) {
     console.error(e);
-    return res.status(502).json({ ok: false, error: 'Could not save your registration. Please try again.' });
+    return res.status(502).json({ ok: false, error: e.message || 'Could not save your registration. Please try again.' });
   }
 };
