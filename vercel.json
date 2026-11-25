@@ -1,0 +1,4 @@
+{
+  "outputDirectory": "public",
+  "functions": { "api/register.js": { "maxDuration": 30 } }
+}
