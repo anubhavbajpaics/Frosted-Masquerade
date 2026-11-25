@@ -3,6 +3,7 @@
  * Paste into: Google Sheet > Extensions > Apps Script. Then Deploy > New deployment > Web app
  * (Execute as: Me, Who has access: Anyone). Copy the /exec URL into Vercel as SHEET_WEBHOOK_URL.
  */
+const SPREADSHEET_ID = '1Hd-VH_10vr6fMYEWCPun2kj6r3nicxXGtR6KUWJefSs';
 const FOLDER_NAME = 'Frosted Masquerade - Payment Proofs';
 const HEAD = ['Time (IST)', 'Name', 'Phone', 'Email', 'Ticket', 'Amount (₹)', 'Friend', 'Friend phone', 'Food', 'Crown', 'Note', 'Payment proof'];
 const reply = o => ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
@@ -12,7 +13,7 @@ function doPost(e) {
   try {
     lock.waitLock(20000);
     const d = JSON.parse(e.postData.contents);
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sh = ss.getSheetByName('Responses') || ss.insertSheet('Responses');
     if (sh.getLastRow() === 0) {
       sh.appendRow(HEAD);
