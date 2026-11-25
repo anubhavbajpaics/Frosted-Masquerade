@@ -20,11 +20,15 @@ function doPost(e) {
       sh.setFrozenRows(1);
       ['A:E', 'G:L'].forEach(r => sh.getRange(r).setNumberFormat('@')); // plain text: keeps phone numbers intact, blocks formulas
     }
+    const timestamp = Utilities.formatDate(new Date(), 'Asia/Kolkata', 'dd MMM yyyy, hh:mm a');
+    sh.appendRow([timestamp, d.name, d.phone, d.email, d.tier, d.amount, d.friend, d.fphone, d.food, d.crown, d.note, 'Uploading...']);
+    const row = sh.getLastRow();
+
     const it = DriveApp.getFoldersByName(FOLDER_NAME);
     const folder = it.hasNext() ? it.next() : DriveApp.createFolder(FOLDER_NAME);
     const blob = Utilities.newBlob(Utilities.base64Decode(d.shot), 'image/jpeg', d.name + ' - ' + d.phone + '.jpg');
     const link = folder.createFile(blob).getUrl();
-    sh.appendRow([Utilities.formatDate(new Date(), 'Asia/Kolkata', 'dd MMM yyyy, hh:mm a'), d.name, d.phone, d.email, d.tier, d.amount, d.friend, d.fphone, d.food, d.crown, d.note, link]);
+    sh.getRange(row, 12).setValue(link);
     return reply({ ok: true });
   } catch (err) {
     return reply({ ok: false, error: String(err) });
